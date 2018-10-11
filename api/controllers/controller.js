@@ -18,17 +18,17 @@ var gateway = braintree.connect({
 module.exports.getToken = function (req, res) {
 
 gateway.clientToken.generate({}, function (err, response) {
-    res.send(response.clientToken);
-/**
+    //res.send(response.clientToken);
+
     res.status(200).json(
             //result
-            {message:response.clientToken,
+            {client_token:response.clientToken,
 
             status:200}
-            )  **/
+            )
   });
-//});
-};
+});
+//};
 
 
 
