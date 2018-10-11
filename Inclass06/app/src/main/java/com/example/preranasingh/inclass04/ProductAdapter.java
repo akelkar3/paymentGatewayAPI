@@ -17,11 +17,14 @@ import java.util.ArrayList;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
     ArrayList<Product> mData;
+    Double totalCost;
     private Context context;
+    IData activity;
 
-    public ProductAdapter(ArrayList<Product> mData,Context context) {
+    public ProductAdapter(ArrayList<Product> mData,Context context,IData activity) {
         this.mData = mData;
         this.context=context;
+        this.activity=activity;
     }
 
     @Override
@@ -44,6 +47,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
        Picasso.with(context).load(product.photo).into(holder.imgProduct);
        if(product.isChecked()){
             holder.itemChecked.setChecked(true);
+            totalCost=totalCost+product.price;
        }else{
            holder.itemChecked.setChecked(false);
        }
@@ -53,6 +57,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     @Override
     public int getItemCount() {
+        activity.setUpData(totalCost);
         return mData.size();
     }
 
@@ -86,5 +91,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         public void onClick(View view) {
 
         }
+    }
+
+    public static interface IData {
+        public void setUpData(Double totalCost);
+
     }
 }
