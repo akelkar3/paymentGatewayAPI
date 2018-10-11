@@ -2,6 +2,58 @@ const mongoose = require("mongoose");
 const Product = require("../models/product");
 const Discount = require("../models/discount");
 
+var braintree = require("braintree");
+
+var gateway = braintree.connect({
+  environment: braintree.Environment.Sandbox,
+  merchantId: "n7wdbctyfzvp8x4m",
+  publicKey: "xwggvjvshzy3qk82",
+  privateKey: "e273297b9663b630681709cea63ab68a"
+});
+
+
+
+
+
+module.exports.getToken = function (req, res) {
+
+gateway.clientToken.generate({}, function (err, response) {
+    res.send(response.clientToken);
+/**
+    res.status(200).json(
+            //result
+            {message:response.clientToken,
+
+            status:200}
+            )  **/
+  });
+//});
+};
+
+
+
+
+module.exports.checkout =function (req, res) {
+  var nonceFromTheClient = req.body.payment_method_nonce;
+  // Use payment method nonce here
+  gateway.transaction.sale({
+    amount: req.body.amount,
+    paymentMethodNonce: nonceFromTheClient,
+    options: {
+      submitForSettlement: true
+    }
+  }, function (err, result) {
+
+
+  });
+};
+
+
+
+
+
+
+
 //get product
 module.exports.getProducts = function(req, res){
   const id=req.body.region;
@@ -23,6 +75,8 @@ module.exports.getProducts = function(req, res){
       });
   }
 };
+
+
 //get discount
 module.exports.getDiscounts = function(req, res){
   const id=req.body.region;
