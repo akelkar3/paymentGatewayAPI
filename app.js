@@ -8,6 +8,51 @@ const mongoose = require("mongoose");
 const routes = require('./api/routes/routes');
 const app = express();
 
+var braintree = require("braintree");
+
+var gateway = braintree.connect({
+  environment: braintree.Environment.Sandbox,
+  merchantId: "n7wdbctyfzvp8x4m",
+  publicKey: "xwggvjvshzy3qk82",
+  privateKey: "e273297b9663b630681709cea63ab68a"
+});
+
+
+/**
+var braintree = require("braintree");
+
+var gateway = braintree.connect({
+  environment: braintree.Environment.Sandbox,
+  merchantId: "useYourMerchantId",
+  publicKey: "useYourPublicKey",
+  privateKey: "useYourPrivateKey"
+});
+
+
+app.get("/client_token", function (req, res) {
+  gateway.clientToken.generate({}, function (err, response) {
+    res.send(response.clientToken);
+  });
+});
+
+app.post("/checkout", function (req, res) {
+  var nonceFromTheClient = req.body.payment_method_nonce;
+  // Use payment method nonce here
+  gateway.transaction.sale({
+    amount: req.body.amount,
+    paymentMethodNonce: nonceFromTheClient,
+    options: {
+      submitForSettlement: true
+    }
+  }, function (err, result) {
+  });
+});
+
+
+**/
+
+
+
 /**
 app.post('/image',function(req,res){
 
@@ -45,6 +90,8 @@ app.use((req, res, next) => {
 
 app.use("/get", routes);
 app.use(express.static('public'))
+
+app.use("/routes", routes);
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
