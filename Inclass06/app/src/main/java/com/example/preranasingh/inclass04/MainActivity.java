@@ -1,6 +1,4 @@
 package com.example.preranasingh.inclass04;
-import android.support.v7.app.ActionBar;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -9,21 +7,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
 import com.estimote.coresdk.observation.region.beacon.BeaconRegion;
 import com.estimote.coresdk.recognition.packets.Beacon;
 import com.estimote.coresdk.service.BeaconManager;
-import com.estimote.mgmtsdk.repackaged.jtar.TarOutputStream;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements ProductAsyncTask.IData{
+import static android.widget.Toast.LENGTH_LONG;
+import static android.widget.Toast.LENGTH_SHORT;
+import static android.widget.Toast.makeText;
+
+public class MainActivity extends AppCompatActivity implements ProductAsyncTask.IData,ProductAdapter.IData{
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -34,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements ProductAsyncTask.
     private Boolean initialized=false;
     private Beacon currentBeacon =null;
     private String beaconUUID="B9407F30-F5F8-466E-AFF9-25556B57FE6D";
+    private Double cost;
 
     String apiURL;
     public static String remoteIP="http://18.223.110.166:5000";
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements ProductAsyncTask.
                                         if((temp==null || temp.getRssi()<badRSSI)&&item.getRssi()*(-1)>goodRSSI) {
                                             currentBeacon = item;
                                             // Woodward 333F
-                                            Toast.makeText(MainActivity.this, "near grocery", Toast.LENGTH_SHORT).show();
+                                            makeText(MainActivity.this, "near grocery", LENGTH_SHORT).show();
                                             getProductList("grocery");
                                         }
                                         break;
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements ProductAsyncTask.
                                         if((temp==null || temp.getRssi()<badRSSI)&&item.getRssi()*(-1)>goodRSSI) {
                                             currentBeacon = item;
                                             // makerspace lab
-                                            Toast.makeText(MainActivity.this, "near lifestyle", Toast.LENGTH_SHORT).show();
+                                            makeText(MainActivity.this, "near lifestyle", LENGTH_SHORT).show();
 
                                             getProductList("lifestyle");
                                         }
@@ -103,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements ProductAsyncTask.
                                         if((temp==null || temp.getRssi()<badRSSI)&&item.getRssi()*(-1)>goodRSSI) {
                                             currentBeacon = item;
                                             //elevator
-                                            Toast.makeText(MainActivity.this, "near produce", Toast.LENGTH_SHORT).show();
+                                            makeText(MainActivity.this, "near produce", LENGTH_SHORT).show();
 
                                             getProductList("produce");
                                         }
@@ -117,14 +116,14 @@ public class MainActivity extends AppCompatActivity implements ProductAsyncTask.
 
                     }
                     if(  noneOfThese&&( temp==null || temp.getRssi()<badRSSI)) {
-                        Toast.makeText(MainActivity.this, "None of the categories are nearby.", Toast.LENGTH_SHORT).show();
+                        makeText(MainActivity.this, "None of the categories are nearby.", LENGTH_SHORT).show();
                         getProductList("");
                     }
 
 
 
                 }else  {
-                    Toast.makeText(MainActivity.this, "couldnt find any beacon", Toast.LENGTH_SHORT).show();
+                    makeText(MainActivity.this, "couldnt find any beacon", LENGTH_SHORT).show();
                     getProductList("");
 
                 }
@@ -150,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements ProductAsyncTask.
 
             new ProductAsyncTask(this).execute(params);
         }else{
-            Toast.makeText(MainActivity.this,"No Network Connection",Toast.LENGTH_LONG).show();
+            makeText(MainActivity.this,"No Network Connection", LENGTH_LONG).show();
         }
     }
     //to check if the network is connected-permission
@@ -164,8 +163,10 @@ public class MainActivity extends AppCompatActivity implements ProductAsyncTask.
 
     @Override
     public void setUpData(ArrayList<Product> productsArrayList) {
-        mAdapter=new ProductAdapter(productsArrayList,getApplicationContext());
+        mAdapter=new ProductAdapter(productsArrayList,getApplicationContext(),this);
         mRecyclerView.setAdapter(mAdapter);
+
+
     }
     @Override
     protected void onResume() {
@@ -185,4 +186,12 @@ public class MainActivity extends AppCompatActivity implements ProductAsyncTask.
 
         super.onPause();
     }
+
+
+    @Override
+    public void setUpData(Double totalCost) {
+        cost=totalCost;
+        Log.d("demo", "setUpData: "+cost);
+    }
+
 }
