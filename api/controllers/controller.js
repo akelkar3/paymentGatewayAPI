@@ -27,8 +27,8 @@ gateway.clientToken.generate({}, function (err, response) {
             status:200}
             )
   });
-});
-//};
+//});
+};
 
 
 
